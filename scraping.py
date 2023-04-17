@@ -1,35 +1,93 @@
 import scrapy
+import w3lib.html
+import sys
+import os.path
+
 from scrapy.crawler import CrawlerProcess
+from scrapy.crawler import CrawlerRunner
 from scrapy.selector import Selector
+from scrapy.utils.project import get_project_settings
+from scrapy.utils.log import configure_logging
 
-visited = {}
-cnt = 20
+from twisted.internet import reactor, defer
 
-class GriffithSpider(scrapy.Spider):
-    name = "griffith_top_20_articles"
-    allowed_domains = ['https://www.griffith.ie', 'www.griffith.ie']
+urls = [] # Represents the list of urls that we will webscrap
+visited = {} # Represents the list of urls already visited
+cnt = 40
+counter = 1
+
+
+# definition of a first scrapy spider used to retrieve the content of each url and save it to a local file
+class GriffithArticleFetchSpider(scrapy.Spider):
+    name = "griffith_articles_fetch"
+    allowed_domains = ["https://www.griffith.ie", "www.griffith.ie"]
+    start_urls = urls
+
+    def parse(self, response):
+        global counter
+        result = str(
+            w3lib.html.remove_tags(str(response.css(".basic-page__content").getall()))
+        )
+        if len(result) < 20:
+            return
+        filename = "D" + str(counter)
+        of = open(sys.argv[1] + "/" + filename, "w")
+        relations_file = open(sys.argv[1] + "/" + "relations.csv", "a")
+        relations_file.write(filename + ", " + response.url + "\n")
+        of.write(result)
+        counter += 1
+
+        print("response url is: ", response.url)
+        print("body data is: ", result)
+
+# Definition of a second scrapy spider used to browse the initial url and get the first 20 urls of the page
+class GriffithGoodLinkSpider(scrapy.Spider):
+    name = "griffith_top_20_links"
+    allowed_domains = ["https://www.griffith.ie", "www.griffith.ie"]
     start_urls = [
         "https://www.griffith.ie",
     ]
 
     def parse(self, response):
+        global urls
         global cnt
         for link in response.xpath("//a/@href").getall():
             if cnt == 0:
                 break
-            if not visited.get(str(link)) and link.startswith("/") and not link.startswith("/cdn-cgi"):
-                link.x
+            if (
+                not visited.get(str(link))
+                and link.startswith("/")
+                and not link.startswith("/cdn-cgi")
+            ):
                 visited[str(link)] = True
                 cnt -= 1
-                print(str(link))
+                url = "https://www.griffith.ie" + str(link)
+                print("adding this url: ", url)
+                urls.append(url)
 
-process = CrawlerProcess(
-    {
-        "USER_AGENT": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0"
-    }
-)
+# Create a new folder for saving the fetched files and check whether the folder already exists. If the folder exists, the script will exit
+def cleanup_and_create_folder():
+    if os.path.exists(sys.argv[1]):
+        print("folder you specified already exists! Please remove it first")
+        sys.exit()
+
+    os.makedirs(sys.argv[1])
 
 
+cleanup_and_create_folder()
+settings = get_project_settings()
+configure_logging(settings)
+runner = CrawlerRunner(settings)
 
-process.crawl(GriffithSpider)
-process.start()
+
+# Run the spiders asynchronously
+@defer.inlineCallbacks
+def crawl():
+    yield runner.crawl(GriffithGoodLinkSpider)
+    yield runner.crawl(GriffithArticleFetchSpider)
+
+    reactor.stop()
+
+
+crawl()
+reactor.run()
