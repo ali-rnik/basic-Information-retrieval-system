@@ -11,8 +11,8 @@ from scrapy.utils.log import configure_logging
 
 from twisted.internet import reactor, defer
 
-urls = [] # Represents the list of urls that we will webscrap
-visited = {} # Represents the list of urls already visited
+urls = []  # Represents the list of urls that we will webscrap
+visited = {}  # Represents the list of urls already visited
 cnt = 40
 counter = 1
 
@@ -26,7 +26,9 @@ class GriffithArticleFetchSpider(scrapy.Spider):
     def parse(self, response):
         global counter
         result = str(
-            w3lib.html.replace_tags(str(response.css(".basic-page__content").getall()), '  ')
+            w3lib.html.replace_tags(
+                str(response.css(".basic-page__content").getall()), "  "
+            )
         )
         if len(result) < 20:
             return
@@ -41,6 +43,7 @@ class GriffithArticleFetchSpider(scrapy.Spider):
         relations_file.close()
 
         counter += 1
+
 
 # Definition of a second scrapy spider used to browse the initial url and get the first 20 urls of the page
 class GriffithGoodLinkSpider(scrapy.Spider):
@@ -66,6 +69,7 @@ class GriffithGoodLinkSpider(scrapy.Spider):
                 url = "https://www.griffith.ie" + str(link)
                 urls.append(url)
 
+
 # Create a new folder for saving the fetched files and check whether the folder already exists. If the folder exists, the script will exit
 def cleanup_and_create_folder(dirname):
     if os.path.exists(dirname):
@@ -76,9 +80,7 @@ def cleanup_and_create_folder(dirname):
 
 
 if len(sys.argv) != 2:
-    print(
-        "Please insert directory paths: python scrapping.py <outfolder>"
-    )
+    print("Please insert directory paths: python scrapping.py <outfolder>")
     sys.exit()
 
 cleanup_and_create_folder(sys.argv[1])
