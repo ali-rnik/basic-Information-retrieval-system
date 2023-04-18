@@ -26,7 +26,7 @@ class GriffithArticleFetchSpider(scrapy.Spider):
     def parse(self, response):
         global counter
         result = str(
-            w3lib.html.remove_tags(str(response.css(".basic-page__content").getall()))
+            w3lib.html.replace_tags(str(response.css(".basic-page__content").getall()), '  ')
         )
         if len(result) < 20:
             return
@@ -74,6 +74,12 @@ def cleanup_and_create_folder(dirname):
 
     os.makedirs(dirname)
 
+
+if len(sys.argv) != 2:
+    print(
+        "Please insert directory paths: python scrapping.py <outfolder>"
+    )
+    sys.exit()
 
 cleanup_and_create_folder(sys.argv[1])
 settings = get_project_settings()

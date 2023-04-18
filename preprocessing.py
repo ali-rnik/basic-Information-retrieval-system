@@ -6,7 +6,7 @@ from stemmer import PorterStemmer
 def scraped_data_files_paths(dir_path):
     files_path_list = []
     if not os.path.exists(dir_path):
-        print("No folder named " + sys.argv[1] + " that contains scraped data files!")
+        print("No folder named " + dir_path + " that contains scraped data files!")
         sys.exit()
 
     for root, _, files in os.walk(dir_path):
@@ -70,6 +70,7 @@ if len(sys.argv) != 4:
     print(
         "Please insert directory paths: python preprocessing.py <infolder> <outfolder> <stopwords file name>"
     )
+    sys.exit()
 
 infolder = sys.argv[1]
 outfolder = sys.argv[2]
