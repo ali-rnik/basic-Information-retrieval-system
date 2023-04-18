@@ -2,7 +2,7 @@ import sys
 import os.path
 from stemmer import PorterStemmer
 
-
+# function taking the path of a folder as an argument and returning the list of paths of files in the folder whose names begin with D
 def scraped_data_files_paths(dir_path):
     files_path_list = []
     if not os.path.exists(dir_path):
@@ -16,9 +16,9 @@ def scraped_data_files_paths(dir_path):
 
     return files_path_list
 
-
+# function that allows you to change punctuation and special characters by spaces in the text passed as an argument
 def tokenization_and_punc_removal(content):
-    content = content.replace("\\n", " ")
+    content = content.replace("\\n", " ") 
     content = content.replace("\\xa0", " ")
     content = content.replace("&amp", " ")
     content = content.replace("\\u200b", " ")
@@ -35,7 +35,7 @@ def tokenization_and_punc_removal(content):
 
     return new_content
 
-
+# function that removes current words from the text passed as an argument
 def stopword_removal(content):
     f = open(swfile, "r")
     while line := f.readline():
@@ -46,7 +46,7 @@ def stopword_removal(content):
     f.close()
     return content
 
-
+# Function that calls Porter's algorithm to perform the stemming on the text passed as an argument
 def stemming(content):
     p = PorterStemmer()
     words = content.split()
