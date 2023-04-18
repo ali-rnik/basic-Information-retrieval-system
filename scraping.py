@@ -30,15 +30,17 @@ class GriffithArticleFetchSpider(scrapy.Spider):
         )
         if len(result) < 20:
             return
+
         filename = "D" + str(counter)
         of = open(sys.argv[1] + "/" + filename, "w")
+        of.write(result)
+        of.close()
+
         relations_file = open(sys.argv[1] + "/" + "relations.csv", "a")
         relations_file.write(filename + ", " + response.url + "\n")
-        of.write(result)
-        counter += 1
+        relations_file.close()
 
-        print("response url is: ", response.url)
-        print("body data is: ", result)
+        counter += 1
 
 # Definition of a second scrapy spider used to browse the initial url and get the first 20 urls of the page
 class GriffithGoodLinkSpider(scrapy.Spider):
@@ -62,19 +64,18 @@ class GriffithGoodLinkSpider(scrapy.Spider):
                 visited[str(link)] = True
                 cnt -= 1
                 url = "https://www.griffith.ie" + str(link)
-                print("adding this url: ", url)
                 urls.append(url)
 
 # Create a new folder for saving the fetched files and check whether the folder already exists. If the folder exists, the script will exit
-def cleanup_and_create_folder():
-    if os.path.exists(sys.argv[1]):
+def cleanup_and_create_folder(dirname):
+    if os.path.exists(dirname):
         print("folder you specified already exists! Please remove it first")
         sys.exit()
 
-    os.makedirs(sys.argv[1])
+    os.makedirs(dirname)
 
 
-cleanup_and_create_folder()
+cleanup_and_create_folder(sys.argv[1])
 settings = get_project_settings()
 configure_logging(settings)
 runner = CrawlerRunner(settings)

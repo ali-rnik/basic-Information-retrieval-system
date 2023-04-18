@@ -1,1 +1,0 @@
-print("We are going to start project. but we have various assignment that we should complete them on time!")
