@@ -1,91 +1,74 @@
 import sys
 import os.path
 from stemmer import PorterStemmer
-
-# function taking the path of a folder as an argument and returning the list of paths of files in the folder whose names begin with D
-def scraped_data_files_paths(dir_path):
-    files_path_list = []
-    if not os.path.exists(dir_path):
-        print("No folder named " + dir_path + " that contains scraped data files!")
-        sys.exit()
-
-    for root, _, files in os.walk(dir_path):
-        for f in files:
-            if f.startswith("D"):
-                files_path_list.append(os.path.join(root[len(dir_path) :], f))
-
-    return files_path_list
-
-# function that allows you to change punctuation and special characters by spaces in the text passed as an argument
-def tokenization_and_punc_removal(content):
-    content = content.replace("\\n", " ") 
-    content = content.replace("\\xa0", " ")
-    content = content.replace("&amp", " ")
-    content = content.replace("\\u200b", " ")
-    content = content.replace("\\", "")
-
-    new_content = ""
-    for c in content:
-        if c.isascii() and (c.isalpha() or c.isspace()):
-            new_content += c.lower()
-        else:
-            new_content += " "
-    while "  " in new_content:
-        new_content = new_content.replace("  ", " ")
-
-    return new_content
-
-# function that removes current words from the text passed as an argument
-def stopword_removal(content):
-    f = open(swfile, "r")
-    while line := f.readline():
-        line = " " + line.strip() + " "
-        while line in content:
-            content = content.replace(line, " ")
-
-    f.close()
-    return content
-
-# Function that calls Porter's algorithm to perform the stemming on the text passed as an argument
-def stemming(content):
-    p = PorterStemmer()
-    words = content.split()
-    new_content = ""
-    for word in words:
-        new_content += p.stem(word, 0, len(word) - 1) + " "
-
-    return new_content
+from scraping import ScrapeUtils
 
 
-# Create a new folder for saving the fetched files and check whether the folder already exists. If the folder exists, the script will exit
-def cleanup_and_create_folder(dirname):
-    if os.path.exists(dirname):
-        print("folder you specified already exists! Please remove it first")
-        sys.exit()
+class Preprocessor:
+    # function that allows you to change punctuation and special characters by spaces in the text passed as an argument
+    def tokenization_and_punc_removal(self, content):
+        content = content.replace("\\n", " ")
+        content = content.replace("\\xa0", " ")
+        content = content.replace("&amp", " ")
+        content = content.replace("\\u200b", " ")
+        content = content.replace("\\", "")
 
-    os.makedirs(dirname)
+        new_content = ""
+        for c in content:
+            if c.isascii() and (c.isalpha() or c.isspace()):
+                new_content += c.lower()
+            else:
+                new_content += " "
+        while "  " in new_content:
+            new_content = new_content.replace("  ", " ")
+
+        return new_content
+
+    # function that removes current words from the text passed as an argument
+    def stopword_removal(self, content, swfile):
+        f = open(swfile, "r")
+        while line := f.readline():
+            line = " " + line.strip() + " "
+            while line in content:
+                content = content.replace(line, " ")
+
+        f.close()
+        return content
+
+    # Function that calls Porter's algorithm to perform the stemming on the text passed as an argument
+    def stemming(self, content):
+        p = PorterStemmer()
+        words = content.split()
+        new_content = ""
+        for word in words:
+            new_content += p.stem(word, 0, len(word) - 1) + " "
+
+        return new_content
+
+    def run(self, content, swfile):
+        content = self.tokenization_and_punc_removal(content)
+        content = self.stopword_removal(content, swfile)
+        content = self.stemming(content)
+        return content
 
 
-if len(sys.argv) != 4:
-    print(
-        "Please insert directory paths: python preprocessing.py <infolder> <outfolder> <stopwords file name>"
+def main():
+    infolder, outfolder, swfile = ScrapeUtils().parse_args(
+        3, "python preprocessing.py <infolder> <outfolder> <stopwords file name>"
     )
-    sys.exit()
+    files_paths = ScrapeUtils().dir_files_path(infolder)
+    ScrapeUtils().create_dir(outfolder)
 
-infolder = sys.argv[1]
-outfolder = sys.argv[2]
-swfile = sys.argv[3]
+    for p in files_paths:
+        infile = open(infolder + "/" + p, "r")
+        content = str(infile.read())
+        content = Preprocessor().run(content, swfile)
+        infile.close()
 
-cleanup_and_create_folder(outfolder)
+        outfile = open(outfolder + "/" + p, "w")
+        outfile.write(content)
+        outfile.close()
 
-for p in scraped_data_files_paths(infolder):
-    f = open(infolder + "/" + p, "r")
-    content = str(f.read())
-    content = tokenization_and_punc_removal(content)
-    content = stopword_removal(content)
-    content = stemming(content)
-    f.close()
 
-    f = open(outfolder + "/" + p, "w")
-    f.write(content)
-    f.close()
+if __name__ == "__main__":
+    main()
