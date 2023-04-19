@@ -108,8 +108,7 @@ class ScrapeUtils:
 
         for root, _, files in os.walk(dirname):
             for f in files:
-                if f.startswith("D"):
-                    paths.append(os.path.join(root[len(dirname) :], f))
+                paths.append(os.path.join(root[len(dirname) :], f))
 
         return paths
 

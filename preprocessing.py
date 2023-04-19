@@ -52,10 +52,15 @@ class Preprocessor:
         return content
 
 
-def main():
-    infolder, outfolder, swfile = ScrapeUtils().parse_args(
-        3, "python preprocessing.py <infolder> <outfolder> <stopwords file name>"
-    )
+def main(custom_args):
+    if custom_args == None:
+        infolder, outfolder, swfile = ScrapeUtils().parse_args(
+            3, "python preprocessing.py <infolder> <outfolder> <stopwords file name>"
+        )
+    else:
+        infolder, outfolder, swfile = custom_args
+        
+
     files_paths = ScrapeUtils().dir_files_path(infolder)
     ScrapeUtils().create_dir(outfolder)
 

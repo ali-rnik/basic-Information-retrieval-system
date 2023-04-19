@@ -42,18 +42,14 @@ class TF_IDF:
 
     # calculate the TF-IDF weight for each term in a text file and store the results in an output file
     def cal_TF_IDF_and_write(self, outfile, freq_max, matrix, n):
-        docs_list = []
-        for k in freq_max.keys():
-            docs_list.append((int(k.strip("D")), k))
-        docs_list = sorted(docs_list)
         f = open(outfile, "a")
         f.write("{:<20}".format(""))
-        for _, doc in docs_list:
-            f.write(" " + "{:<5}".format(doc))
+        for k in freq_max.keys():
+            f.write(" " + "{:<5}".format(k))
         f.write("\n")
         for term in n.keys():
             f.write("{:<20}".format(term) + " ")
-            for _, doc in docs_list:
+            for doc in freq_max.keys():
                 if matrix[term].get(doc) == None:
                     matrix[term][doc] = 0
 
@@ -70,8 +66,11 @@ class TF_IDF:
             f.write("\n")
 
 
-def main():
-    infile, outfile = ScrapeUtils().parse_args(2, "python TF_IDF.py <infile> <outfile>")
+def main(custom_args):
+    if custom_args == None: 
+        infile, outfile = ScrapeUtils().parse_args(2, "python TF_IDF.py <infile> <outfile>")
+    else:
+        infile, outfile = custom_args
 
     # check if input file exists
     ScrapeUtils().exit_on_file_missing(infile)

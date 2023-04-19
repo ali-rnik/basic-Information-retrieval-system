@@ -39,10 +39,15 @@ class InvertIndex:
             f.write("\n")
         f.close()
 
-def main():
-    infolder, outfilename = ScrapeUtils().parse_args(
-        2, "python inverted_index.py <infolder> <outfilename>"
-    )
+def main(custom_args):
+
+    if custom_args == None:   
+        infolder, outfilename = ScrapeUtils().parse_args(
+            2, "python inverted_index.py <infolder> <outfilename>"
+        )
+    else:
+        infolder, outfilename = custom_args
+
     files_paths = ScrapeUtils().dir_files_path(infolder)
     inverted_index_dict = InvertIndex().invertindex_gen(files_paths, infolder)
 
