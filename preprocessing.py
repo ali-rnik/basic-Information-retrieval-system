@@ -52,7 +52,7 @@ class Preprocessor:
         return content
 
 
-def main(custom_args):
+def main(custom_args=None):
     if custom_args == None:
         infolder, outfolder, swfile = ScrapeUtils().parse_args(
             3, "python preprocessing.py <infolder> <outfolder> <stopwords file name>"

@@ -20,11 +20,10 @@ class GriffithArticleFetchSpider(scrapy.Spider):
     counter = 1
 
     def parse(self, response):
-        result = str(
-            w3lib.html.replace_tags(
-                str(response.css(".basic-page__content").getall()), "  "
-            )
-        )
+        result = " ".join(response.css(".basic-page__content").getall())
+
+        result = w3lib.html.replace_tags(text=result, token=" ")
+        result = w3lib.html.replace_escape_chars(text=result, replace_by=" ")
         if len(result) < 20:
             return
 
@@ -33,7 +32,6 @@ class GriffithArticleFetchSpider(scrapy.Spider):
         of.write(result)
         of.close()
 
-        open("relationship_url_document.csv", "w").close()
         relations_file = open("relationship_url_document.csv", "a")
         relations_file.write(filename + ", " + response.url + "\n")
         relations_file.close()
@@ -123,6 +121,8 @@ class ScrapeUtils:
             sys.exit()
 
 def main():
+    open("relationship_url_document.csv", "w").close()
+
     dirname = ScrapeUtils().parse_args(1, "python scrapping.py <outfolder>")
     ScrapeUtils().create_dir(dirname)
 

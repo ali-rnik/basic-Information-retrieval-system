@@ -14,7 +14,7 @@ class CosineSim:
     def dot_product(self, matrix, doc1, doc2):
         dot_product = 0
         for word in matrix.keys():
-            dot_product += matrix[word][doc1] * matrix[word][doc2]
+            dot_product += (matrix[word][doc1] * matrix[word][doc2])
         return dot_product
 
     def cosine_sim(self, matrix, doc1, doc2):
@@ -55,7 +55,7 @@ class CosineSim:
         return matrix
 
 
-def main(custom_args):
+def main(custom_args=None):
     if custom_args == None:
         infile, first_doc, second_doc = ScrapeUtils().parse_args(
             3, "python cosine_similarity.py <infile> D1 D2"

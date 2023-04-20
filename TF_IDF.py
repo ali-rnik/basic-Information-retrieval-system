@@ -3,7 +3,6 @@ import os.path
 import math
 from scraping import ScrapeUtils
 
-
 class TF_IDF:
     def parse_inverted_mat_file(self, infile):
         f = open(infile, "r")  # open the file in read mode
@@ -60,18 +59,21 @@ class TF_IDF:
                 max_freq_j = freq_max[doc]
 
                 tf_ij = float(freq_ij) / max_freq_j 
+
+                # if the query is exactly "griffith" because we have griffith word in every documents, 
+                # then log(1) == 0 and later it makes problem when calculating cosine sim (divide by zero)
+                # so we trick and decrease n_i by one if it is equal to N
+                if N == n_i:
+                    n_i -= 1
                 idf_i = math.log(float(N) / n_i, 10)
 
-   
-                w_ij = round((tf_ij * idf_i), 3) + 0.001 # we add this epsilon to not get zero vector length (not to get divided by zero error)
-                if w_ij == 0:
-                    print(w_ij)
+                w_ij = round((tf_ij * idf_i), 3)
                 f.write("{:<5}".format(w_ij) + " ")
             f.write("\n")
         f.close()
 
 
-def main(custom_args):
+def main(custom_args=None):
     if custom_args == None: 
         infile, outfile = ScrapeUtils().parse_args(2, "python TF_IDF.py <infile> <outfile>")
     else:
@@ -87,3 +89,6 @@ def main(custom_args):
     TF_IDF().cal_TF_IDF_and_write(outfile, freq_max, matrix, n)
 
     return freq_max
+
+if __name__ == "__main__":
+    main()

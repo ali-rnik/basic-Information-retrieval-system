@@ -39,7 +39,7 @@ class InvertIndex:
             f.write("\n")
         f.close()
 
-def main(custom_args):
+def main(custom_args=None):
 
     if custom_args == None:   
         infolder, outfilename = ScrapeUtils().parse_args(
