@@ -1,3 +1,3 @@
 clean:
-	rm  -rf *.tmp
+	rm  -rf *.tmp __pycache__
 

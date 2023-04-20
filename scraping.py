@@ -33,6 +33,7 @@ class GriffithArticleFetchSpider(scrapy.Spider):
         of.write(result)
         of.close()
 
+        open("relationship_url_document.csv", "w").close()
         relations_file = open("relationship_url_document.csv", "a")
         relations_file.write(filename + ", " + response.url + "\n")
         relations_file.close()
@@ -71,8 +72,7 @@ class ScrapeUtils:
     # Create a new folder for saving the fetched files and check whether the folder already exists. If the folder exists, the script will exit
     def create_dir(self, dirname):
         if os.path.exists(dirname):
-            print("folder you specified already exists! Please remove it first")
-            sys.exit()
+            return
 
         os.makedirs(dirname)
 
@@ -113,9 +113,9 @@ class ScrapeUtils:
         return paths
 
     def exit_on_file_existence(self, filename):
-        if os.path.isfile(filename):
-            print(filename,"exists! choose another file name.")
-            sys.exit()
+        pass
+        # This function should do a lot of validity check in developed assignment. but because we are in
+        # deadline of assignment we overwrite the file safely :)
 
     def exit_on_file_missing(self, filename):
         if not os.path.isfile(filename):

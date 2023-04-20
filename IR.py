@@ -14,15 +14,27 @@ def main():
     preprocessing_outfolder = "preprocessing_outfolder.tmp"
     inverted_index_outfile = "inverted_index_outfile.tmp"
     tf_idf_outfile = "tf_idf_outfile.tmp"
-    
+
+    open(inverted_index_outfile, "w").close()
+    open(tf_idf_outfile, "w").close()
+
     query_as_doc_injection(folder_name, str(query))
 
     preprocessing.main([folder_name, preprocessing_outfolder, stopword_file])
     inverted_index.main([preprocessing_outfolder, inverted_index_outfile])
-    TF_IDF.main([inverted_index_outfile, tf_idf_outfile])
-    cosine_similarity.main([tf_idf_outfile, "QUERY", "D1"])
 
+    docnames = TF_IDF.main([inverted_index_outfile, tf_idf_outfile])
 
+    result = []
+    for docname in docnames.keys():
+        if docname != "QUERY":
+            result.append((docname, cosine_similarity.main([tf_idf_outfile, "QUERY", docname])))
+
+    result = sorted(result, key=lambda tup: tup[1], reverse=True)
+
+    for elem in result:
+        print("{:<4}".format(elem[0]), " ", "{:<4}".format(elem[1]))
+    
 
 
 if __name__ == "__main__":

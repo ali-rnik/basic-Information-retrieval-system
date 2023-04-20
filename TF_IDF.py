@@ -42,28 +42,33 @@ class TF_IDF:
 
     # calculate the TF-IDF weight for each term in a text file and store the results in an output file
     def cal_TF_IDF_and_write(self, outfile, freq_max, matrix, n):
+        open(outfile, "w").close()
         f = open(outfile, "a")
         f.write("{:<20}".format(""))
         for k in freq_max.keys():
             f.write(" " + "{:<5}".format(k))
         f.write("\n")
+        N = len(freq_max.keys())
         for term in n.keys():
             f.write("{:<20}".format(term) + " ")
             for doc in freq_max.keys():
                 if matrix[term].get(doc) == None:
                     matrix[term][doc] = 0
 
-                N = len(docs_list)
                 n_i = n[term]
                 freq_ij = matrix[term][doc]
                 max_freq_j = freq_max[doc]
 
-                tf_ij = float(freq_ij) / max_freq_j
+                tf_ij = float(freq_ij) / max_freq_j 
                 idf_i = math.log(float(N) / n_i, 10)
 
-                w_ij = round(tf_ij * idf_i, 3)
+   
+                w_ij = round((tf_ij * idf_i), 3) + 0.001 # we add this epsilon to not get zero vector length (not to get divided by zero error)
+                if w_ij == 0:
+                    print(w_ij)
                 f.write("{:<5}".format(w_ij) + " ")
             f.write("\n")
+        f.close()
 
 
 def main(custom_args):
@@ -81,3 +86,4 @@ def main(custom_args):
     freq_max, matrix, n = TF_IDF().parse_inverted_mat_file(infile)
     TF_IDF().cal_TF_IDF_and_write(outfile, freq_max, matrix, n)
 
+    return freq_max

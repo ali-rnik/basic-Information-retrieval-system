@@ -21,7 +21,8 @@ class CosineSim:
         doc1_vlen = self.calculate_vec_length(matrix, doc1)
         doc2_vlen = self.calculate_vec_length(matrix, doc2)
         dp = self.dot_product(matrix, doc1, doc2)
-        result = float(dp) / (doc1_vlen * doc2_vlen)
+        docs_vlen = doc1_vlen * doc2_vlen
+        result = float(dp) / docs_vlen
         return result
 
     def parse_tfidf_file(self, infile):
@@ -32,6 +33,8 @@ class CosineSim:
 
         while line := f.readline():
             words = line.split()
+            if (len(words) == 0):
+                break
             cnt = 0
             term = ""
             if first_row:
@@ -64,8 +67,9 @@ def main(custom_args):
     matrix = CosineSim().parse_tfidf_file(infile)
 
     sim = CosineSim().cosine_sim(matrix, first_doc, second_doc)
-    print(sim)
-    return sim
+    if custom_args == None:
+        print(sim)
+    return round(sim, 3)
 
 
 if __name__ == "__main__":

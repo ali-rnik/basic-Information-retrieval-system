@@ -30,7 +30,7 @@ class InvertIndex:
         return inverted_index_dict
 
     def save_mat(self, mat, outfilename):
-        f = open(outfilename, "a")
+        f = open(outfilename, "w")
         for word in mat:
             f.write('{:<15}'.format(word+" "))
             for doc in mat[word]:
