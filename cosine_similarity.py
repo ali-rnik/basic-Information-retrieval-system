@@ -1,7 +1,7 @@
 import sys
 import os.path
 import math
-from scraping import ScrapeUtils
+from utils import Utils
 
 
 class CosineSim:
@@ -57,13 +57,13 @@ class CosineSim:
 
 def main(custom_args=None):
     if custom_args == None:
-        infile, first_doc, second_doc = ScrapeUtils().parse_args(
+        infile, first_doc, second_doc = Utils().parse_args(
             3, "python cosine_similarity.py <infile> D1 D2"
         )
     else:
         infile, first_doc, second_doc = custom_args
 
-    ScrapeUtils().exit_on_file_missing(infile)
+    Utils().exit_on_file_missing(infile)
     matrix = CosineSim().parse_tfidf_file(infile)
 
     sim = CosineSim().cosine_sim(matrix, first_doc, second_doc)

@@ -7,7 +7,7 @@ def query_as_doc_injection(dirname, query_string):
 
 
 def main():
-    folder_name, query, stopword_file = scraping.ScrapeUtils().parse_args(
+    folder_name, query, stopword_file = scraping.Utils().parse_args(
         3, "python IR.py <folder_name> <query sentence> <stopwords file>"
     )
 

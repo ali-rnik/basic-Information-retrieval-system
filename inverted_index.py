@@ -1,6 +1,6 @@
 import sys
 import os.path
-from scraping import ScrapeUtils
+from utils import Utils
 
 class InvertIndex:
     def invertindex_gen(self, files_paths, infolder):
@@ -42,16 +42,16 @@ class InvertIndex:
 def main(custom_args=None):
 
     if custom_args == None:   
-        infolder, outfilename = ScrapeUtils().parse_args(
+        infolder, outfilename = Utils().parse_args(
             2, "python inverted_index.py <infolder> <outfilename>"
         )
     else:
         infolder, outfilename = custom_args
 
-    files_paths = ScrapeUtils().dir_files_path(infolder)
+    files_paths = Utils().dir_files_path(infolder)
     inverted_index_dict = InvertIndex().invertindex_gen(files_paths, infolder)
 
-    ScrapeUtils().exit_on_file_existence(outfilename)
+    Utils().exit_on_file_existence(outfilename)
     InvertIndex().save_mat(inverted_index_dict, outfilename)
 
 if __name__ == "__main__":

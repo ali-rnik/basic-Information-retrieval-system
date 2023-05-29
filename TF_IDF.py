@@ -1,7 +1,7 @@
 import sys
 import os.path
 import math
-from scraping import ScrapeUtils
+from utils import Utils
 
 class TF_IDF:
     def parse_inverted_mat_file(self, infile):
@@ -75,15 +75,15 @@ class TF_IDF:
 
 def main(custom_args=None):
     if custom_args == None: 
-        infile, outfile = ScrapeUtils().parse_args(2, "python TF_IDF.py <infile> <outfile>")
+        infile, outfile = Utils().parse_args(2, "python TF_IDF.py <infile> <outfile>")
     else:
         infile, outfile = custom_args
 
     # check if input file exists
-    ScrapeUtils().exit_on_file_missing(infile)
+    Utils().exit_on_file_missing(infile)
 
     # check if the output file exists
-    ScrapeUtils().exit_on_file_existence(outfile)
+    Utils().exit_on_file_existence(outfile)
 
     freq_max, matrix, n = TF_IDF().parse_inverted_mat_file(infile)
     TF_IDF().cal_TF_IDF_and_write(outfile, freq_max, matrix, n)

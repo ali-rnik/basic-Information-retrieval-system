@@ -1,8 +1,7 @@
 import sys
 import os.path
 from stemmer import PorterStemmer
-from scraping import ScrapeUtils
-
+from utils import Utils
 
 class Preprocessor:
     # function that allows you to change punctuation and special characters by spaces in the text passed as an argument
@@ -54,15 +53,15 @@ class Preprocessor:
 
 def main(custom_args=None):
     if custom_args == None:
-        infolder, outfolder, swfile = ScrapeUtils().parse_args(
+        infolder, outfolder, swfile = Utils().parse_args(
             3, "python preprocessing.py <infolder> <outfolder> <stopwords file name>"
         )
     else:
         infolder, outfolder, swfile = custom_args
         
 
-    files_paths = ScrapeUtils().dir_files_path(infolder)
-    ScrapeUtils().create_dir(outfolder)
+    files_paths = Utils().dir_files_path(infolder)
+    Utils().create_dir(outfolder)
 
     for p in files_paths:
         infile = open(infolder + "/" + p, "r")
