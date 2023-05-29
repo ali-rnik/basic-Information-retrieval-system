@@ -35,3 +35,6 @@
     $ python IR.py preprocced_folder/ "college" stop_words_english.txt  
 ```    
     
+
+# Sample Run
+![image placeholder](sample-run.png)
